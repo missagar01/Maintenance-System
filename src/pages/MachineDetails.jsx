@@ -201,7 +201,6 @@ const MachineDetails = ({ machine, goBack }) => {
 
       // Prepare the payload
       const payload = {
-        action: "updateMachine",
         sheetName: "FormResponses",
         serialNo: originalSerialNo.toString().trim(), // Ensure it's a string and trimmed
         "Serial No": editFormData.serialNumber?.toString().trim() || "",

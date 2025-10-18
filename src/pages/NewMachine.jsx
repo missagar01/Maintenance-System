@@ -158,7 +158,7 @@ const NewMachine = () => {
     try {
       const currentYear = new Date().getFullYear();
       const cleanedName = machineName.toLowerCase().replace(/\s+/g, "");
-      const prefix = `SN-${currentYear}/${cleanedName}/`;
+      const prefix = `SRMPL-${cleanedName}/`;
 
       let count = 0;
 

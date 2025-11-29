@@ -8,6 +8,7 @@ function AssignTask() {
   const [accordionOpen, setAccordionOpen] = useState(false);
   const [sheetData, setSheetData] = useState([]);
   const [doerName, setDoerName] = useState([]);
+  const [doerDirectory, setDoerDirectory] = useState([]);
   const [giveByData, setGivenByData] = useState([]);
   const [taskStatusData, setTaskStatusData] = useState([]);
   const [priorityData, setPriorityData] = useState([]);
@@ -88,6 +89,7 @@ function AssignTask() {
     setSelectedMachine("");
     setSelectedSerialNo("");
     setFilteredSerials([]);
+    setSelectedDoerName("");
   };
 
   // Handle machine change
@@ -106,6 +108,23 @@ function AssignTask() {
   useEffect(() => {
     filterMachinesByDepartment();
   }, [selectedDepartment, sheetData]);
+
+  useEffect(() => {
+    if (selectedDepartment) {
+      const departmentDoers = doerDirectory
+        .filter(
+          (item) =>
+            (item.department || "").toLowerCase() ===
+            selectedDepartment.toLowerCase()
+        )
+        .map((item) => item.name)
+        .filter(Boolean);
+      setDoerName([...new Set(departmentDoers)]);
+    } else {
+      const allDoers = doerDirectory.map((item) => item.name).filter(Boolean);
+      setDoerName([...new Set(allDoers)]);
+    }
+  }, [selectedDepartment, doerDirectory]);
 
   const fetchWorkingDaysCalendar = async () => {
     try {
@@ -232,13 +251,20 @@ function AssignTask() {
 
         const formattedRows = rows.map((rowObj) => {
           const row = rowObj.c;
-          const rowData = {};
-          row.forEach((cell, i) => {
-            rowData[headers[i]] = cell.v;
-          });
-          return rowData;
+        const rowData = {};
+        row.forEach((cell, i) => {
+          rowData[headers[i]] = cell.v;
         });
-        const DoerNameData = formattedRows.map((item) => item["Doer Name"]);
+        return rowData;
+      });
+        const doerDirectoryData = formattedRows
+          .filter((item) => item["Doer Name"])
+          .map((item) => ({
+            name: item["Doer Name"],
+            department: item["Department"] || "",
+          }));
+        setDoerDirectory(doerDirectoryData);
+        const DoerNameData = [...new Set(doerDirectoryData.map((item) => item.name))];
         setDoerName(DoerNameData);
         const giveBy = formattedRows.map((item) => item["Given By"]);
         setGivenByData(giveBy);

@@ -9,6 +9,7 @@ function AssignTask() {
   const [sheetData, setSheetData] = useState([]);
   const [doerName, setDoerName] = useState([]);
   const [doerDirectory, setDoerDirectory] = useState([]);
+  const [doerDepartmentOptions, setDoerDepartmentOptions] = useState([]);
   const [giveByData, setGivenByData] = useState([]);
   const [taskStatusData, setTaskStatusData] = useState([]);
   const [priorityData, setPriorityData] = useState([]);
@@ -24,6 +25,7 @@ function AssignTask() {
   const [endTaskDate, setEndTaskDate] = useState("");
   const [availableFrequencies, setAvailableFrequencies] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedDoerDepartment, setSelectedDoerDepartment] = useState("");
   const [filteredMachines, setFilteredMachines] = useState([]);
 
   const [selectedSerialNo, setSelectedSerialNo] = useState("");
@@ -92,6 +94,11 @@ function AssignTask() {
     setSelectedDoerName("");
   };
 
+  const handleDoerDepartmentChange = (department) => {
+    setSelectedDoerDepartment(department);
+    setSelectedDoerName("");
+  };
+
   // Handle machine change
   const handleMachineChange = (machineName) => {
     setSelectedMachine(machineName);
@@ -111,12 +118,18 @@ function AssignTask() {
   }, [selectedDepartment, sheetData]);
 
   useEffect(() => {
-    if (selectedDepartment) {
+    const departments = [...new Set(doerDirectory.map((item) => item.department).filter(Boolean))]
+      .sort();
+    setDoerDepartmentOptions(departments);
+  }, [doerDirectory]);
+
+  useEffect(() => {
+    if (selectedDoerDepartment) {
       const departmentDoers = doerDirectory
         .filter(
           (item) =>
             (item.department || "").toLowerCase() ===
-            selectedDepartment.toLowerCase()
+            selectedDoerDepartment.toLowerCase()
         )
         .map((item) => item.name)
         .filter(Boolean);
@@ -125,7 +138,7 @@ function AssignTask() {
       const allDoers = doerDirectory.map((item) => item.name).filter(Boolean);
       setDoerName([...new Set(allDoers)]);
     }
-  }, [selectedDepartment, doerDirectory]);
+  }, [selectedDoerDepartment, doerDirectory]);
 
   const fetchWorkingDaysCalendar = async () => {
     try {
@@ -823,16 +836,49 @@ function AssignTask() {
                         onChange={(e) => setSelectedGivenBy(e.target.value)}
                         className="py-2 w-full rounded-md border border-gray-300 shadow-sm px-4 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       >
-                        <option value="">Select Given By</option>
-                        {loaderMasterSheetData ? (
-                          <>
-                            <option className="flex gap-5 items-center justify-center">
-                              <Loader2Icon className="animate-spin text-red-500" />
+                    <option value="">Select Given By</option>
+                    {loaderMasterSheetData ? (
+                      <>
+                        <option className="flex gap-5 items-center justify-center">
+                          <Loader2Icon className="animate-spin text-red-500" />
                               <h1>Wait Please...</h1>
                             </option>
                           </>
                         ) : (
                           giveByData.map(
+                            (item, index) =>
+                              item && (
+                                <option key={index} value={item}>
+                                  {item}
+                                </option>
+                              )
+                          )
+                        )}
+                      </select>
+                    </div>
+
+                    {/* Doer's Department */}
+                    <div>
+                      <label
+                        htmlFor="doerDepartment"
+                        className="block text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Doer's Department
+                      </label>
+                      <select
+                        id="doerDepartment"
+                        value={selectedDoerDepartment}
+                        onChange={(e) => handleDoerDepartmentChange(e.target.value)}
+                        className="py-2 rounded-md w-full border border-gray-300 shadow-sm px-4 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="">Select Doer's Department</option>
+                        {loaderMasterSheetData ? (
+                          <option className="flex gap-5 items-center justify-center">
+                            <Loader2Icon className="animate-spin text-red-500" />
+                            <h1>Wait Please...</h1>
+                          </option>
+                        ) : (
+                          doerDepartmentOptions.map(
                             (item, index) =>
                               item && (
                                 <option key={index} value={item}>
@@ -1330,6 +1376,35 @@ function AssignTask() {
 
                   {/* Right Section */}
                   <div className="w-full md:w-[45%] space-y-4">
+                    {/* Doer's Department */}
+                    <div>
+                      <label htmlFor="repairDoerDepartment" className="block text-sm font-medium text-gray-700 mb-1">
+                        Doer's Department
+                      </label>
+                      <select
+                        id="repairDoerDepartment"
+                        value={selectedDoerDepartment}
+                        onChange={(e) => handleDoerDepartmentChange(e.target.value)}
+                        className="w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="">Select Doer's Department</option>
+                        {loaderMasterSheetData ? (
+                          <option className="flex gap-5 items-center justify-center">
+                            <Loader2Icon className="animate-spin text-red-500" />
+                            <h1>Wait Please...</h1>
+                          </option>
+                        ) : (
+                          doerDepartmentOptions.map((item, index) =>
+                            item ? (
+                              <option key={index} value={item}>
+                                {item}
+                              </option>
+                            ) : null
+                          )
+                        )}
+                      </select>
+                    </div>
+
                     {/* Doer Name */}
                     <div>
                       <label htmlFor="doerName" className="block text-sm font-medium text-gray-700 mb-1">

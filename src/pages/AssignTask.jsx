@@ -97,8 +97,9 @@ function AssignTask() {
     setSelectedMachine(machineName);
     const serials = sheetData
       .filter((item) => item["Machine Name"] === machineName && item["Department"] === selectedDepartment)
-      .map((item) => item["Serial No"]);
-    setFilteredSerials(serials);
+      .map((item) => item["Tag No"])
+      .filter(Boolean);
+    setFilteredSerials([...new Set(serials)]);
   };
 
   useEffect(() => {
@@ -785,21 +786,21 @@ function AssignTask() {
                       </select>
                     </div>
 
-                    {/* Serial No Dropdown */}
+                    {/* Tag No Dropdown */}
                     {selectedMachine && !loaderSheetData && (
                       <div>
                         <label
                           htmlFor="serialNo"
                           className="block text-sm font-medium text-gray-700 mb-1"
                         >
-                          Serial Number
+                          Tag Number
                         </label>
                         <select
                           id="serialNo"
                           onChange={(e) => setSelectedSerialNo(e.target.value)}
                           className="py-2 w-full rounded-md border border-gray-300 shadow-sm px-4 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                          <option value="">Select Serial No</option>
+                          <option value="">Select Tag No</option>
                           {filteredSerials.map((serial, idx) => (
                             <option key={idx} value={serial}>
                               {serial}
@@ -1262,18 +1263,18 @@ function AssignTask() {
                       </select>
                     </div>
 
-                    {/* Serial No Dropdown */}
+                    {/* Tag No Dropdown */}
                     {selectedMachine && !loaderSheetData && (
                       <div>
                         <label htmlFor="serialNo" className="block text-sm font-medium text-gray-700 mb-1">
-                          Serial Number
+                          Tag Number
                         </label>
                         <select
                           id="serialNo"
                           onChange={(e) => setSelectedSerialNo(e.target.value)}
                           className="w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         >
-                          <option value="">Select Serial No</option>
+                          <option value="">Select Tag No</option>
                           {filteredSerials.map((serial, idx) => (
                             <option key={idx} value={serial}>
                               {serial}
